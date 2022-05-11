@@ -193,9 +193,13 @@ def main (df, name: str , min: int = 103):
                 y = getPredictions(model, data[1])
                 accuracy = getAccuracy(data[3], y)
                 if accuracy*100 >= min:
+                    print("lol")
                     bestmodelname = item[0]
                     bestaccuracy = accuracy
-                    break
+                    print(Fore.YELLOW + "done")
+                    print(Fore.GREEN + "best model is : {} ,with accuracy  {}".format(bestmodelname, bestaccuracy))
+                    bestmodel = model
+                    return bestmodel
                 if accuracy > bestaccuracy:
                     bestaccuracy = accuracy
                     bestmodelname = item[0]
