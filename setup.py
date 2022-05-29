@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 import codecs
 import os
 
-VERSION = '0.0.3'
+VERSION = '0.0.4'
 DESCRIPTION = 'a library for recommending ml algorithms'
 LONG_DESCRIPTION = 'A package that helps you to recommend machine learning algorithms'
 
