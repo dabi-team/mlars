@@ -13,7 +13,7 @@ from mlars.getData import clearData, getData
 # from xgboost import XGBClassifier
 
 models = [
-    ["SVM",lambda nu: linear_model.SGDOneClassSVM(nu=nu), [
+    ["SVM", lambda nu: linear_model.SGDOneClassSVM(nu=nu), [
          [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
          [True, False],
          [100, 200, 300, 400, 500, 600, 700, 800, 900, 1000],
@@ -26,8 +26,8 @@ models = [
          [True, False],
          [False, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     ]],
-    ["logistic Regression",lambda penalty:  linear_model.LogisticRegression(penalty= penalty,max_iter=10000), [
-        [ 'l2',  'none'],
+    ["logistic Regression", lambda penalty:  linear_model.LogisticRegression(penalty=penalty, max_iter=10000), [
+        ['l2',  'none'],
         [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         [True, False],
         [0.001, 0.01, 0.1, 1, 10, 100, 1000],
@@ -43,7 +43,7 @@ models = [
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     ]],
-    ["Random Forest",lambda n_estimators : RandomForestClassifier(n_estimators=n_estimators), [
+    ["Random Forest", lambda n_estimators: RandomForestClassifier(n_estimators=n_estimators), [
         [10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
         ["gini", "entropy"],
         [None, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -64,15 +64,15 @@ models = [
         [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         [0.5, 0.6, 0.7, 0.8, 0.9, 1.0],
     ]],
-    ["Gaussian Naive Bayes",lambda var_smoothing:  GaussianNB(var_smoothing=var_smoothing),
+    ["Gaussian Naive Bayes", lambda var_smoothing:  GaussianNB(var_smoothing=var_smoothing),
      [
 
          [1e-09, 1e-08, 1e-07, 1e-06, 1e-05, 1e-04, 1e-03, 1e-02, 1e-01, 1.0],
          [None, [0.5, 0.5], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [
              0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]],
-     ]
-     ],
-    ["KNN", lambda n_neighbors :  neighbors.KNeighborsClassifier(n_neighbors=n_neighbors), [
+    ]
+    ],
+    ["KNN", lambda n_neighbors:  neighbors.KNeighborsClassifier(n_neighbors=n_neighbors), [
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         ["uniform", "distance"],
         ["auto", "ball_tree", "kd_tree", "brute"],
@@ -84,7 +84,7 @@ models = [
             "p": 1, "V": None}, {"p": 1, "V": None}, {"p": 1, "V": None}, {"p": 1, "V": None}, {"p": 1, "V": None}],
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
     ], ],
-    ["Decision Tree",lambda criterion :  DecisionTreeClassifier(criterion=criterion), [
+    ["Decision Tree", lambda criterion:  DecisionTreeClassifier(criterion=criterion), [
         ["gini", "entropy"],
         ["best", "random"],
         [None, 10, 20, 30, 40, 50, 60, 70, 80, 90, 100],
@@ -100,30 +100,30 @@ models = [
         [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
     ]],
     # this doesn't work
-    ["Multinomial Naive Bayes", lambda alpha : MultinomialNB(alpha=alpha), [
+    ["Multinomial Naive Bayes", lambda alpha: MultinomialNB(alpha=alpha), [
         [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         [True, False],
         [None, [0.5, 0.5], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [
             0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]],
     ]],
-    ["Bernoulli Naive Bayes",lambda alpha:  BernoulliNB(alpha=alpha),  [
+    ["Bernoulli Naive Bayes", lambda alpha:  BernoulliNB(alpha=alpha),  [
         [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         [True, False],
         [None, [0.5, 0.5], [0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [
             0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5], [0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5, 0.5]],
     ]],
-    ["AdaBoost",lambda base_estimator: AdaBoostClassifier(base_estimator=base_estimator,), 
+    ["AdaBoost", lambda base_estimator: AdaBoostClassifier(base_estimator=base_estimator,),
      [
          [None, DecisionTreeClassifier(), GaussianNB(),
-        #   MultinomialNB(),
+          #   MultinomialNB(),
           BernoulliNB()],
          [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
          [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
          ["SAMME", "SAMME.R"],
          [None, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
-     ],],
-    ["Gradient Boosting",lambda learning_rate : GradientBoostingClassifier(learning_rate=learning_rate), [
+    ], ],
+    ["Gradient Boosting", lambda learning_rate: GradientBoostingClassifier(learning_rate=learning_rate), [
         [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
         ["deviance", "exponential"],
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
@@ -147,7 +147,7 @@ models = [
         [0.0, 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1],
 
     ]],
-    ["Extra Trees",lambda n_estimators: ExtraTreesClassifier(n_estimators=n_estimators), [
+    ["Extra Trees", lambda n_estimators: ExtraTreesClassifier(n_estimators=n_estimators), [
         [1, 2, 3, 4, 5, 6, 7, 8, 9, 10],
         ["gini", "entropy"],
         ["auto", "sqrt", "log2"],
@@ -169,12 +169,11 @@ models = [
         [0.5, 0.6, 0.7, 0.8, 0.9, 1],
 
     ]],
-    ]
-    # ["XGBoost", XGBClassifier]
+]
+# ["XGBoost", XGBClassifier]
 
 
-
-def main (df, name: str , min: int = 103):
+def t_main(df, name: str):
     df = clearData(df)
     unique = df[name].unique()
     print(Fore.YELLOW + "starting with dataframe of shape: {} {}".format(df.shape[0], df.shape[1])
@@ -183,20 +182,68 @@ def main (df, name: str , min: int = 103):
     data = getData(df, name, unique)
     print(Fore.GREEN + "train test split done test size: {}".format(0.2))
     print(Fore.YELLOW + "training model")
-    print (Fore.YELLOW + "new shape of train data: {} {}".format(data[0].shape[0], data[0].shape[1]))
+    print(Fore.YELLOW +
+          "new shape of train data: {} {}".format(data[0].shape[0], data[0].shape[1]))
+    first_bestaccuracy = 0
+    first_bestmodel = None
+    second_bestaccuracy = 0
+    second_bestmodel = None
+    thrid_bestaccuracy = 0
+    thrid_bestmodel = None
+    for item in models:
+        for param in item[2][0]:
+            try:
+                print(Fore.CYAN + item[0], end=" ")
+                model = getModel(data[0], data[2], item[1], param)
+                y = getPredictions(model, data[1])
+                accuracy = getAccuracy(data[3], y)
+                print(Fore.GREEN + "accuracy: {}".format(accuracy))
+                if accuracy > first_bestaccuracy:
+                    second_bestaccuracy = first_bestaccuracy
+                    second_bestmodel = first_bestmodel
+                    first_bestaccuracy = accuracy
+                    first_bestmodel = model
+                elif accuracy > second_bestaccuracy:
+                    second_bestaccuracy = accuracy
+                    second_bestmodel = model
+                elif accuracy > thrid_bestaccuracy:
+                    thrid_bestaccuracy = accuracy
+                    thrid_bestmodel = model
+            except:
+                print(Fore.RED + "This Algorithm is not working")
+    print(Fore.GREEN + "best model is: {} with accuracy: {}".format(first_bestmodel, first_bestaccuracy))
+    print(Fore.GREEN + "second best model is: {} with accuracy: {}".format(
+        second_bestmodel, second_bestaccuracy))
+    print(Fore.GREEN + "third best model is: {} with accuracy: {}".format(
+        thrid_bestmodel, thrid_bestaccuracy))
+    return {"first": first_bestmodel, "second": second_bestmodel, "thrid": thrid_bestmodel}
+
+
+def main(df, name: str, min: int = 103):
+    df = clearData(df)
+    unique = df[name].unique()
+    print(Fore.YELLOW + "starting with dataframe of shape: {} {}".format(df.shape[0], df.shape[1])
+          + "\nand the column is:", name
+          + "\nwith {0} unique values , {1} and {2}".format(len(unique), unique[0], unique[1]))
+    data = getData(df, name, unique)
+    print(Fore.GREEN + "train test split done test size: {}".format(0.2))
+    print(Fore.YELLOW + "training model")
+    print(Fore.YELLOW +
+          "new shape of train data: {} {}".format(data[0].shape[0], data[0].shape[1]))
     bestaccuracy = 0
     for item in models:
         for param in item[2][0]:
             try:
-                print(Fore.CYAN + item[0] , end=" ")
-                model = getModel(data[0], data[2], item[1],param )
+                print(Fore.CYAN + item[0], end=" ")
+                model = getModel(data[0], data[2], item[1], param)
                 y = getPredictions(model, data[1])
                 accuracy = getAccuracy(data[3], y)
                 if accuracy*100 >= min:
                     bestmodelname = item[0]
                     bestaccuracy = accuracy
                     print(Fore.YELLOW + "done")
-                    print(Fore.GREEN + "best model is : {} ,with accuracy  {}".format(bestmodelname, bestaccuracy))
+                    print(
+                        Fore.GREEN + "best model is : {} ,with accuracy  {}".format(bestmodelname, bestaccuracy))
                     bestmodel = model
                     return bestmodel
                 if accuracy > bestaccuracy:
@@ -213,7 +260,7 @@ def main (df, name: str , min: int = 103):
 def getModel(X_train, y_train, Model, param):
     model = Model(param)
     model.fit(X_train, y_train)
-    print(Fore.WHITE + "model fit done with params " + str(param) , end = ' ')
+    print(Fore.WHITE + "model fit done with params " + str(param), end=' ')
     return model
 
 
