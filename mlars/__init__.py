@@ -6,6 +6,7 @@ from sklearn.model_selection import train_test_split
 from sklearn import datasets, metrics, neighbors,  linear_model, svm
 from mlars.getData import clearData, getData
 from mlars.models import new_func
+import matplotlib.pyplot as plt
 
 models = new_func()
 # from xgboost import XGBClassifier
@@ -14,6 +15,7 @@ models = new_func()
 
 def t_main(df, name: str):
     df = clearData(df)
+    resultdf = pd.DataFrame()
     unique = df[name].unique()
     print(Fore.YELLOW + "starting with dataframe of shape: {} {}".format(df.shape[0], df.shape[1])
           + "\nand the column is:", name
@@ -37,6 +39,7 @@ def t_main(df, name: str):
                 y = getPredictions(model, data[1])
                 accuracy = getAccuracy(data[3], y)
                 print(Fore.GREEN + "accuracy: {}".format(accuracy))
+                resultdf.append(pd.DataFrame({"model": item[0], "param": param, "accuracy": accuracy}))
                 if accuracy > first_bestaccuracy:
                     second_bestaccuracy = first_bestaccuracy
                     second_bestmodel = first_bestmodel
@@ -55,6 +58,7 @@ def t_main(df, name: str):
         second_bestmodel, second_bestaccuracy))
     print(Fore.GREEN + "third best model is: {} with accuracy: {}".format(
         thrid_bestmodel, thrid_bestaccuracy))
+    print(resultdf)
     return {"first": first_bestmodel, "second": second_bestmodel, "thrid": thrid_bestmodel}
 
 
@@ -72,6 +76,10 @@ def main(df, name: str, min: int = 103, top3: bool = False):
     print(Fore.YELLOW +
           "new shape of train data: {} {}".format(data[0].shape[0], data[0].shape[1]))
     bestaccuracy = 0
+    bestmodel = None
+    bestmodelname = None
+    dict = {"Name": [],"Params":[], "Accuracy": []}
+    resultdf = pd.DataFrame(dict)
     for item in models:
         for param in item[2][0]:
             try:
@@ -79,6 +87,7 @@ def main(df, name: str, min: int = 103, top3: bool = False):
                 model = getModel(data[0], data[2], item[1], param)
                 y = getPredictions(model, data[1])
                 accuracy = getAccuracy(data[3], y)
+                # pd.concat([resultdf , pd.DataFrame({"Name": item[0], "Params": param, "Accuracy": accuracy})])
                 if accuracy*100 >= min:
                     bestmodelname = item[0]
                     bestaccuracy = accuracy
@@ -93,9 +102,13 @@ def main(df, name: str, min: int = 103, top3: bool = False):
                     bestmodel = model
             except:
                 print(Fore.BLUE + "This Algorithm is not supported")
+        resultdf.loc[-1] = [item[0],param,accuracy]  # adding a row
+        resultdf.index = resultdf.index + 1  # shifting index
+        resultdf = resultdf.sort_index()
     print(Fore.YELLOW + "done")
     print(Fore.GREEN + "best model is : {} ,with accuracy  {}".format(bestmodelname, bestaccuracy))
-    return bestmodel
+    print(resultdf)
+    return resultdf
 
 
 def getModel(X_train, y_train, Model, param):
