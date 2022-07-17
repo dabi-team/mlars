@@ -1,7 +1,8 @@
+from typing import List
 import pandas as pd
 import numpy as np
 from colorama import Fore, Back, Style
-from sklearn.metrics import accuracy_score
+from sklearn.metrics import accuracy_score, classification_report, confusion_matrix, f1_score, precision_recall_curve, precision_score, recall_score, roc_auc_score, roc_curve
 from sklearn.model_selection import train_test_split
 from sklearn import datasets, metrics, neighbors,  linear_model, svm
 from mlars.getData import clearData, getData
@@ -9,112 +10,73 @@ from mlars.models import new_func
 import matplotlib.pyplot as plt
 
 models = new_func()
-# from xgboost import XGBClassifier
-# ["XGBoost", XGBClassifier]
-
-
-def t_main(df, name: str):
-    df = clearData(df)
-    resultdf = pd.DataFrame()
-    unique = df[name].unique()
-    print(Fore.YELLOW + "starting with dataframe of shape: {} {}".format(df.shape[0], df.shape[1])
-          + "\nand the column is:", name
-          + "\nwith {0} unique values , {1} and {2}".format(len(unique), unique[0], unique[1]))
-    data = getData(df, name, unique)
-    print(Fore.GREEN + "train test split done test size: {}".format(0.2))
-    print(Fore.YELLOW + "training model")
-    print(Fore.YELLOW +
-          "new shape of train data: {} {}".format(data[0].shape[0], data[0].shape[1]))
-    first_bestaccuracy = 0
-    first_bestmodel = None
-    second_bestaccuracy = 0
-    second_bestmodel = None
-    thrid_bestaccuracy = 0
-    thrid_bestmodel = None
-    for item in models:
-        for param in item[2][0]:
-            try:
-                print(Fore.CYAN + item[0], end=" ")
-                model = getModel(data[0], data[2], item[1], param)
-                y = getPredictions(model, data[1])
-                accuracy = getAccuracy(data[3], y)
-                print(Fore.GREEN + "accuracy: {}".format(accuracy))
-                resultdf.append(pd.DataFrame({"model": item[0], "param": param, "accuracy": accuracy}))
-                if accuracy > first_bestaccuracy:
-                    second_bestaccuracy = first_bestaccuracy
-                    second_bestmodel = first_bestmodel
-                    first_bestaccuracy = accuracy
-                    first_bestmodel = model
-                elif accuracy > second_bestaccuracy:
-                    second_bestaccuracy = accuracy
-                    second_bestmodel = model
-                elif accuracy > thrid_bestaccuracy:
-                    thrid_bestaccuracy = accuracy
-                    thrid_bestmodel = model
-            except:
-                print(Fore.RED + "This Algorithm is not working")
-    print(Fore.GREEN + "best model is: {} with accuracy: {}".format(first_bestmodel, first_bestaccuracy))
-    print(Fore.GREEN + "second best model is: {} with accuracy: {}".format(
-        second_bestmodel, second_bestaccuracy))
-    print(Fore.GREEN + "third best model is: {} with accuracy: {}".format(
-        thrid_bestmodel, thrid_bestaccuracy))
-    print(resultdf)
-    return {"first": first_bestmodel, "second": second_bestmodel, "thrid": thrid_bestmodel}
 
 
 def main(df, name: str, min: int = 103, top3: bool = False):
-    if top3:
-        return t_main(df, name)
     df = clearData(df)
     unique = df[name].unique()
-    print(Fore.YELLOW + "starting with dataframe of shape: {} {}".format(df.shape[0], df.shape[1])
-          + "\nand the column is:", name
-          + "\nwith {0} unique values , {1} and {2}".format(len(unique), unique[0], unique[1]))
     data = getData(df, name, unique)
-    print(Fore.GREEN + "train test split done test size: {}".format(0.2))
-    print(Fore.YELLOW + "training model")
-    print(Fore.YELLOW +
-          "new shape of train data: {} {}".format(data[0].shape[0], data[0].shape[1]))
-    bestaccuracy = 0
-    bestmodel = None
-    bestmodelname = None
-    dict = {"Name": [],"Params":[], "Accuracy": []}
-    resultdf = pd.DataFrame(dict)
+    dict = {
+        "Name": [],
+        "Accuracy": [],
+        "Precision": [],
+        "Recall": [],
+        "F1": [],
+        "Average": [],
+        "Hyperparameter": []
+    }
+
     for item in models:
+        highestModelName = None
+        highestModelAccuracy = 0
+        highestModelPrecision = 0
+        highestModelRecall = 0
+        highestModelF1 = 0
+        highestModelAverage = 0
+        highestModelHyperparameter = None
         for param in item[2][0]:
-            try:
-                print(Fore.CYAN + item[0], end=" ")
-                model = getModel(data[0], data[2], item[1], param)
-                y = getPredictions(model, data[1])
-                accuracy = getAccuracy(data[3], y)
-                # pd.concat([resultdf , pd.DataFrame({"Name": item[0], "Params": param, "Accuracy": accuracy})])
-                if accuracy*100 >= min:
-                    bestmodelname = item[0]
-                    bestaccuracy = accuracy
-                    print(Fore.YELLOW + "done")
-                    print(
-                        Fore.GREEN + "best model is : {} ,with accuracy  {}".format(bestmodelname, bestaccuracy))
-                    bestmodel = model
-                    return bestmodel
-                if accuracy > bestaccuracy:
-                    bestaccuracy = accuracy
-                    bestmodelname = item[0]
-                    bestmodel = model
-            except:
-                print(Fore.BLUE + "This Algorithm is not supported")
-        resultdf.loc[-1] = [item[0],param,accuracy]  # adding a row
-        resultdf.index = resultdf.index + 1  # shifting index
-        resultdf = resultdf.sort_index()
-    print(Fore.YELLOW + "done")
-    print(Fore.GREEN + "best model is : {} ,with accuracy  {}".format(bestmodelname, bestaccuracy))
-    print(resultdf)
-    return resultdf
+            model, accuracy, precision, recall, f1, average = try_model(
+                item[0], data[0], data[2], item[1], data[1], data[3], param)
+            if average > highestModelAverage:
+                highestModelName = item[0]
+                highestModelAccuracy = accuracy
+                highestModelPrecision = precision
+                highestModelRecall = recall
+                highestModelF1 = f1
+                highestModelAverage = average
+                highestModelHyperparameter = param
+        dict["Name"].append(highestModelName)
+        dict["Accuracy"].append(highestModelAccuracy)
+        dict["Precision"].append(highestModelPrecision)
+        dict["Recall"].append(highestModelRecall)
+        dict["F1"].append(highestModelF1)
+        dict["Average"].append(highestModelAverage)
+        # hyperparameter to string
+        highestModelHyperparameter = str(highestModelHyperparameter)
+        dict["Hyperparameter"].append(highestModelHyperparameter)
+    df = pd.DataFrame(dict)
+    return df
 
 
-def getModel(X_train, y_train, Model, param):
+def try_model(name, X_train, y_train, Model, X_test, y_test, param):
+    try:
+        model = getModel(name, X_train, y_train, Model, param)
+        y = getPredictions(model, X_test)
+        accuracy = getAccuracy(y_test, y)
+        precision = getPrecision(y_test, y)
+        recall = recall_score(y_test, y, average='macro')
+        f1 = f1_score(y_test, y, average="macro")
+        average = getAverage(accuracy, precision, recall, f1)
+        return model, accuracy, precision, recall, f1, average
+    except:
+        print(Fore.RED + "model not supported")
+        return None, 0, 0, 0, 0, 0
+
+
+def getModel(name, X_train, y_train, Model, param):
     model = Model(param)
     model.fit(X_train, y_train)
-    print(Fore.WHITE + "model fit done with params " + str(param), end=' ')
+    # print(Fore.WHITE + name + "model fit done with params " + str(param), end=' ')
     return model
 
 
@@ -125,6 +87,51 @@ def getPredictions(model, X_test):
 
 
 def getAccuracy(y_test, predictions):
-    accuracy = accuracy_score(y_test, predictions)
-    print(Fore.BLUE + str(accuracy))
-    return accuracy
+    try:
+        accuracy = accuracy_score(y_test, predictions)
+        # print(Fore.BLUE + str(accuracy))
+        return accuracy
+    except:
+        return 0
+
+
+def getPrecision(y_test, predictions):
+    try:
+        precision = precision_score(y_test, predictions, average='macro')
+        # print(Fore.BLUE + str(precision))
+        return precision
+    except:
+        print(Fore.RED + "precision not supported")
+        return 0
+
+
+def getRecall(y_test, predictions):
+    try:
+        recall = recall_score(y_test, predictions,  average='macro')
+        # print(Fore.BLUE + str(recall))
+        return recall
+    except:
+        print(Fore.RED + "recall not supported")
+        return 0
+
+
+def getF1(y_test, predictions):
+    try:
+        f1 = f1_score(y_test, predictions, average='macro')
+        # print(Fore.BLUE + str(f1))
+        return f1
+    except:
+        print(Fore.RED + "f1 not supported")
+        return 0
+
+
+def getAverage(accuracy, precision, recall, f1):
+    try:
+        if accuracy + precision + recall + f1 == 0:
+            return 0.2
+        average = (accuracy + precision + recall + f1) / 4
+        # print(Fore.BLUE + str(average))
+        return average
+    except:
+        print(Fore.RED + "average not supported")
+        return 0.2
